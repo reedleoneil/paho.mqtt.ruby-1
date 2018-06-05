@@ -18,7 +18,7 @@ module PahoMqtt
   module SSLHelper
     extend self
 
-    def config_ssl_context(cert_path=nil, key_path=nil, ca_path=nil)
+    def config_ssl_context (cert_path=nil, key_path=nil, ca_path=nil)
       ssl_context = OpenSSL::SSL::SSLContext.new
       set_cert(cert_path, ssl_context)
       set_key(key_path, ssl_context)
@@ -27,6 +27,9 @@ module PahoMqtt
       ssl_context
     end
 
+
+    private
+    
     def set_cert(cert_path=nil, ssl_context)
       unless cert_path.nil?
         ssl_context.cert = OpenSSL::X509::Certificate.new(File.read(cert_path))
@@ -34,24 +37,7 @@ module PahoMqtt
     end
 
     def set_key(key_path=nil, ssl_context)
-      unless key_path.nil?
-        return MQTT_ERR_SUCCESS if try_rsa_key(key_path, ssl_context) == MQTT_ERR_SUCCESS
-        begin
-          ssl_context.key = OpenSSL::PKey::EC.new(File.read(key_path))
-          return MQTT_ERR_SUCCESS
-        rescue OpenSSL::PKey::ECError
-          raise NotSupportedEncryptionException.new("Could not support the type of the provided key (supported: RSA and EC)")
-        end
-      end
-    end
-
-    def try_rsa_key(key_path, ssl_context)
-      begin
-        ssl_context.key = OpenSSL::PKey::RSA.new(File.read(key_path))
-        return MQTT_ERR_SUCCESS
-      rescue OpenSSL::PKey::RSAError
-        return MQTT_ERR_FAIL
-      end
+      ssl_context.key = OpenSSL::PKey.read(File.read(key_path)) unless key_path.nil?
     end
 
     def set_root_ca(ca_path, ssl_context)
