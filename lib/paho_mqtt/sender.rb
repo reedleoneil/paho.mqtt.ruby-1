@@ -15,8 +15,7 @@
 module PahoMqtt
   class Sender
 
-    attr_reader :last_packet_sent_at
-    attr_reader :last_pingreq_sent_at
+    attr_accessor :last_packet_sent_at
 
     def initialize(ack_timeout)
       @socket          = nil
@@ -24,6 +23,7 @@ module PahoMqtt
       @publish_queue   = []
       @publish_mutex   = Mutex.new
       @writing_mutex   = Mutex.new
+      @last_packet_sent_at = -1
       @ack_timeout     = ack_timeout
     end
 
