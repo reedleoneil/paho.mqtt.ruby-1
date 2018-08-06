@@ -26,6 +26,11 @@ module PahoMqtt
       @subscriber          = nil
     end
 
+    def clean_start
+      @last_packet_received_at = nil
+      @last_pingresp_received_at = nil
+    end
+
     def config_pubsub(publisher, subscriber)
       @publisher = publisher
       @subscriber = subscriber
