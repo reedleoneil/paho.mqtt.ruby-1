@@ -41,6 +41,7 @@ module PahoMqtt
       connect_timeout = Time.now + @ack_timeout
       while (Time.now <= connect_timeout) && !is_connected? do
         @cs = @handler.receive_packet
+        sleep 0.01
       end
       unless is_connected?
         PahoMqtt.logger.warn("Connection failed. Couldn't recieve a Connack packet from: #{@host}.") if PahoMqtt.logger?
